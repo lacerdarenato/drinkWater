@@ -19,7 +19,8 @@ class PersonModel(alchemy.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'weight': self.weight
+            'weight': self.weight,
+            'daily_consumption': []
         }
 
     def save_to_db(self):
