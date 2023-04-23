@@ -8,8 +8,8 @@ class PersonModel(alchemy.Model):
     id = alchemy.Column(alchemy.Integer, primary_key=True)
     name = alchemy.Column(alchemy.String(255))
     weight = alchemy.Column(alchemy.Integer)
-    daily_consumption = alchemy.relationship(
-        dailyConsumption.DailyConsumptionModel, lazy='dynamic')
+
+    history_consumptions = alchemy.relationship(dailyConsumption.DailyConsumptionModel, lazy='dynamic')
 
     def __init__(self, name, weight):
         self.name = name
@@ -20,7 +20,7 @@ class PersonModel(alchemy.Model):
             'id': self.id,
             'name': self.name,
             'weight': self.weight,
-            'daily_consumption': []
+            'daily_consumption': [dailyConsumption.json() for dailyConsumption in self.history_consumptions.all()]
         }
 
     def save_to_db(self):
