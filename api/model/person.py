@@ -9,7 +9,8 @@ class PersonModel(alchemy.Model):
     name = alchemy.Column(alchemy.String(255))
     weight = alchemy.Column(alchemy.Integer)
 
-    history_consumptions = alchemy.relationship(dailyConsumption.DailyConsumptionModel, lazy='dynamic')
+    history_consumptions = alchemy.relationship(
+        dailyConsumption.DailyConsumptionModel, lazy='dynamic')
 
     def __init__(self, name, weight):
         self.name = name
@@ -26,6 +27,9 @@ class PersonModel(alchemy.Model):
     def save_to_db(self):
         alchemy.session.add(self)
         alchemy.session.commit()
+
+    def get_target_consumption(self):
+        return self.weight * 35
 
     @classmethod
     def find_one_by_id(cls, id):

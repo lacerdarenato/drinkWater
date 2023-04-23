@@ -51,13 +51,13 @@ def create_consumption_for_person(id):
     if person_searched:
         new_consumption = dailyConsumption.DailyConsumptionModel(
             date=request_data['date'],
-            target=request_data['target'],
+            target=person_searched.get_target_consumption(),
             remaining=request_data['remaining'],
             consumption=request_data['consumption'],
             percentage=request_data['percentage'],
             is_goal=request_data['is_goal'],
             person_id=person_searched.id)
-        
+
         new_consumption.save_to_db()
         return new_consumption.json()
 
