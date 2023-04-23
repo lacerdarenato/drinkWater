@@ -19,3 +19,15 @@ class PersonModel(alchemy.Model):
             'name': self.name,
             'weight': self.weight
         }
+
+    def save_to_db(self):
+        alchemy.session.add(self)
+        alchemy.session.commit()
+
+    @classmethod
+    def find_one_by_id(cls, id):
+        cls.query.filter_by(id=id).first()
+
+    @classmethod
+    def find_one_by_name(cls, name):
+        cls.query.filter_by(name=name).first()
