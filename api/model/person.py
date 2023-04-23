@@ -1,4 +1,5 @@
 from data import alchemy
+from . import dailyConsumption
 
 
 class PersonModel(alchemy.Model):
@@ -7,7 +8,8 @@ class PersonModel(alchemy.Model):
     id = alchemy.Column(alchemy.Integer, primary_key=True)
     name = alchemy.Column(alchemy.String(255))
     weight = alchemy.Column(alchemy.Integer)
-    daily_consumption = []
+    daily_consumption = alchemy.relationship(
+        dailyConsumption.DailyConsumptionModel, lazy='dynamic')
 
     def __init__(self, name, weight):
         self.name = name
