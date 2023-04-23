@@ -2,8 +2,10 @@ from data import alchemy
 
 
 class DailyConsumptionModel(alchemy.Model):
+    __tablename__ = 'daily_consumption'
+    
     id = alchemy.Column(alchemy.Integer, primary_key=True)
-    date = alchemy.Column(alchemy.Date, nullable=False)
+    date = alchemy.Column(alchemy.DateTime, nullable=False)
     target = alchemy.Column(alchemy.Integer)
     remaining = alchemy.Column(alchemy.Integer)
     consumption = alchemy.Column(alchemy.Integer)
