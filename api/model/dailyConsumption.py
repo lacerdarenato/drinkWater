@@ -39,8 +39,8 @@ class DailyConsumptionModel(alchemy.Model):
         
     @classmethod
     def find_one_by_id(cls, id):
-        cls.query.filter_by(id=id).first()
+        return cls.query.filter_by(id=id).first()
         
     @classmethod
     def find_all_by_id(cls, id):
-        cls.query.filter_by(id=id)
+        return cls.query.filter_by(id=id)

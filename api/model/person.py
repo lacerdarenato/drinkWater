@@ -28,8 +28,8 @@ class PersonModel(alchemy.Model):
 
     @classmethod
     def find_one_by_id(cls, id):
-        cls.query.filter_by(id=id).first()
+        return cls.query.filter_by(id=id).first()
 
     @classmethod
     def find_one_by_name(cls, name):
-        cls.query.filter_by(name=name).first()
+        return cls.query.filter_by(name=name).first()
