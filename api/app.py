@@ -45,13 +45,12 @@ def create_consumption_for_person(id):
     request_data = request.get_json()
 
     if not 'date' in request_data:
-        request_data['date'] = datetime.datetime.now()
+        request_data['date'] = datetime.datetime.now().strftime('%d/%m/%Y')
 
     person_searched = person.PersonModel.find_one_by_id(id)
     if person_searched:
         new_consumption = dailyConsumption.DailyConsumptionModel(
             date=request_data['date'],
-            target=person_searched.get_target_consumption(),
             remaining=request_data['remaining'],
             consumption=request_data['consumption'],
             percentage=request_data['percentage'],
