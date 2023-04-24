@@ -77,27 +77,31 @@ def drink_water(id):
         new_record = RecordModel(
             date=request_data['date'],
             amount=request_data['amount'],
-            person_id=request_data['person_id']
+            person_id=person_searched.id
         )
-        consumption_searched = DailyConsumptionModel.find_one_consumption(person_searched.id)
-        daily_consumption = new_record.get_daily_drunk_by_person(person_searched.id, request_data['date'])
-        target = person_searched.target
-        remaining = target - daily_consumption,
+        consumption_searched = DailyConsumptionModel.find_one_consumption(person_searched.id, request_data['date'])
+        daily_consumption = new_record.get_daily_drunk_by_person(person_searched.id, request_data['date'])+request_data['amount']
+        print(daily_consumption)
+        target_value = person_searched.target
+        remaining_value = target_value - daily_consumption
+        percentage_value=(daily_consumption/target_value)*100
+        is_goal_value=True if (remaining_value <= 0) else False        
 
-        new_consumption = DailyConsumptionModel(
+        if consumption_searched:
+            consumption_searched.update_to_db(daily_consumption,percentage_value,remaining_value,is_goal_value)            
+            
+        else:
+            new_consumption = DailyConsumptionModel(
             date=request_data['date'],
             consumption=daily_consumption,
-            remaining=remaining,
-            percentage=remaining/target,
-            is_goal=True if remaining >= target else False)
-        if consumption_searched:
-            new_record.save_to_db()
-            new_consumption.update_to_db()
-        else:
-            new_record.save_to_db()
+            remaining=remaining_value,
+            percentage=percentage_value,
+            is_goal=is_goal_value,
+            person_id=person_searched.id)
+            
             new_consumption.save_to_db()
-
-
+            
+        new_record.save_to_db()
         return new_record.json()
 
     return {'message': f'Pessoa com id: {id} nao encontrada'}, 404
