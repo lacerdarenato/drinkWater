@@ -1,8 +1,4 @@
 from data import alchemy
-from record import RecordModel
-from person import PersonModel
-
-import datetime
 
 
 class DailyConsumptionModel(alchemy.Model):
@@ -39,17 +35,19 @@ class DailyConsumptionModel(alchemy.Model):
     def save_to_db(self):
         alchemy.session.add(self)
         alchemy.session.commit()
-    
-    def update_to_db(self):
-        alchemy.session.update(self)
-        alchemy.session.commit()
+
+    def update_to_db(self, consumption, percentage, remaining, is_goal):
+        self.consumption = consumption
+        self.percentage = percentage
+        self.remaining = remaining
+        self.is_goal = is_goal
 
     def sum_total_consumption_at(self, daily_records):
         total_consumption = sum(
             record.json()['consumption'] for record in daily_records if record)
         return total_consumption
 
-    @classmethod
+    @ classmethod
     def find_one_consumption(cls, person_id, date):
         return cls.query.filter(
             DailyConsumptionModel.person_id == person_id,
