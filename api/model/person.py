@@ -23,7 +23,6 @@ class PersonModel(alchemy.Model):
             'id': self.id,
             'name': self.name,
             'weight': self.weight,
-            'daily_consumption': [dailyConsumption.json() for dailyConsumption in self.history_consumptions.all()]
         }
 
     def save_to_db(self):
