@@ -1,5 +1,7 @@
 from data import alchemy
-from functools import reduce
+from record import RecordModel
+from person import PersonModel
+
 import datetime
 
 
@@ -7,7 +9,7 @@ class DailyConsumptionModel(alchemy.Model):
     __tablename__ = 'daily_consumption'
 
     id = alchemy.Column(alchemy.Integer, primary_key=True)
-    date = alchemy.Column(alchemy.String, nullable=False)
+    date = alchemy.Column(alchemy.String(10), nullable=False)
     remaining = alchemy.Column(alchemy.Integer)
     consumption = alchemy.Column(alchemy.Integer)
     percentage = alchemy.Column(alchemy.Integer)
@@ -37,20 +39,18 @@ class DailyConsumptionModel(alchemy.Model):
     def save_to_db(self):
         alchemy.session.add(self)
         alchemy.session.commit()
+    
+    def update_to_db(self):
+        alchemy.session.update(self)
+        alchemy.session.commit()
 
-    def sum_total_consumption_at(consumption_json):
-        total = sum(item.json()['consumption'] for item in consumption_json if item)
-        return total
-
-    def set_consumption_params(self, consumption):
-        self.consumption = consumption
-
-    @classmethod
-    def find_one_by_id(cls, id):
-        return cls.query.filter_by(id=id).first()
+    def sum_total_consumption_at(self, daily_records):
+        total_consumption = sum(
+            record.json()['consumption'] for record in daily_records if record)
+        return total_consumption
 
     @classmethod
-    def find_consumptions_by_id_at_date(cls, id, date):
+    def find_one_consumption(cls, person_id, date):
         return cls.query.filter(
-            DailyConsumptionModel.person_id == id,
-            DailyConsumptionModel.date == date).all()
+            DailyConsumptionModel.person_id == person_id,
+            DailyConsumptionModel.date == date).first()
