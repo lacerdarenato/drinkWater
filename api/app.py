@@ -3,6 +3,7 @@ from model.dailyConsumption import DailyConsumptionModel
 from model.person import PersonModel
 from model.record import RecordModel
 import datetime
+import json
 from dotenv import load_dotenv
 import os
 load_dotenv()
@@ -42,26 +43,13 @@ def get_person_by_id(id):
     return {'message': f'Pessoa com id: {id} nao existe'}, 404
 
 
-@app.route('/person/<int:id>/consumption', methods=['POST'])
-def create_consumption_for_person(id):
-    request_data = request.get_json()
-
-    if not 'date' in request_data:
-        request_data['date'] = datetime.datetime.now().strftime('%d/%m/%Y')
-
+@app.route('/person/<int:id>/consumption', methods=['GET'])
+def get_person_history(id):
     person_searched = PersonModel.find_one_by_id(id)
     if person_searched:
-        new_consumption = DailyConsumptionModel(
-            date=request_data['date'],
-            remaining=request_data['remaining'],
-            consumption=request_data['consumption'],
-            percentage=request_data['percentage'],
-            is_goal=request_data['is_goal'],
-            person_id=person_searched.id)
-
-        new_consumption.save_to_db()
-        return new_consumption.json()
-
+        history = DailyConsumptionModel.find_all_person_consumption(id)
+        print(history[0].json())
+    
     return {'message': f'Pessoa com id: {id} nao encontrada'}, 404
 
 
@@ -79,28 +67,28 @@ def drink_water(id):
             amount=request_data['amount'],
             person_id=person_searched.id
         )
-        consumption_searched = DailyConsumptionModel.find_one_consumption(person_searched.id, request_data['date'])
-        daily_consumption = new_record.get_daily_drunk_by_person(person_searched.id, request_data['date'])+request_data['amount']
-        print(daily_consumption)
+        consumption_searched = DailyConsumptionModel.find_one_consumption(
+            person_searched.id, request_data['date'])
+        total_drunk = new_record.get_daily_drunk_by_person(
+            person_searched.id, request_data['date']) + request_data['amount']
         target_value = person_searched.target
-        remaining_value = target_value - daily_consumption
-        percentage_value=(daily_consumption/target_value)*100
-        is_goal_value=True if (remaining_value <= 0) else False        
+        remaining_value = target_value - total_drunk
+        percentage_value = (total_drunk/target_value)*100
+        is_goal_value = True if (remaining_value <= 0) else False
 
         if consumption_searched:
-            consumption_searched.update_to_db(daily_consumption,percentage_value,remaining_value,is_goal_value)            
-            
+            consumption_searched.update_to_db(
+                total_drunk, percentage_value, remaining_value, is_goal_value)
         else:
             new_consumption = DailyConsumptionModel(
-            date=request_data['date'],
-            consumption=daily_consumption,
-            remaining=remaining_value,
-            percentage=percentage_value,
-            is_goal=is_goal_value,
-            person_id=person_searched.id)
-            
+                date=request_data['date'],
+                remaining=person_searched.target,
+                person_id=person_searched.id
+            )
+            new_consumption.update_to_db(
+                total_drunk, percentage_value, remaining_value, is_goal_value)
             new_consumption.save_to_db()
-            
+
         new_record.save_to_db()
         return new_record.json()
 

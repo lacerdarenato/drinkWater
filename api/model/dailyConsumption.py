@@ -14,12 +14,12 @@ class DailyConsumptionModel(alchemy.Model):
     person_id = alchemy.Column(
         alchemy.Integer, alchemy.ForeignKey('person.id'))
 
-    def __init__(self, date, remaining,  consumption, percentage, is_goal, person_id):
+    def __init__(self, date, remaining, person_id):
         self.date = date
         self.remaining = remaining
-        self.consumption = consumption
-        self.percentage = percentage
-        self.is_goal = is_goal
+        self.consumption = 0
+        self.percentage = 0
+        self.is_goal = False
         self.person_id = person_id
 
     def json(self):
@@ -42,10 +42,9 @@ class DailyConsumptionModel(alchemy.Model):
         self.remaining = remaining
         self.is_goal = is_goal
 
-    def sum_total_consumption_at(self, daily_records):
-        total_consumption = sum(
-            record.json()['consumption'] for record in daily_records if record)
-        return total_consumption
+    @classmethod
+    def find_all_person_consumption(cls, person_id):
+        return cls.query.filter_by(person_id=person_id).all()
 
     @ classmethod
     def find_one_consumption(cls, person_id, date):
