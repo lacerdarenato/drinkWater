@@ -33,7 +33,3 @@ class PersonModel(alchemy.Model):
     @classmethod
     def find_one_by_id(cls, id):
         return cls.query.filter_by(id=id).first()
-
-    @classmethod
-    def find_one_by_name(cls, name):
-        return cls.query.filter_by(name=name).all()

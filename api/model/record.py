@@ -31,12 +31,6 @@ class RecordModel(alchemy.Model):
         alchemy.session.commit()
 
     @classmethod
-    def find_records_by_id_at_date(cls, id, date):
-        return cls.query.filter(
-            RecordModel.person_id == id,
-            RecordModel.date == date).all()
-
-    @classmethod
     def get_daily_drunk_by_person(cls, id, date):
         daily_records = cls.query.filter(
             RecordModel.person_id == id,
