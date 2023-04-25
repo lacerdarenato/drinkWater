@@ -1,7 +1,4 @@
 from data import alchemy
-from . import person
-
-import datetime
 
 
 class RecordModel(alchemy.Model):
