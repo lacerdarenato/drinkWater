@@ -3,7 +3,6 @@ from model.dailyConsumption import DailyConsumptionModel
 from model.person import PersonModel
 from model.record import RecordModel
 import datetime
-import json
 from dotenv import load_dotenv
 import os
 load_dotenv()
@@ -28,7 +27,8 @@ def home():
 def create_person():
     request_data = request.get_json()
     new_person = PersonModel(
-        request_data['name'], request_data['weight'])
+        request_data['name'], request_data['weight']
+    )
     new_person.save_to_db()
     result = PersonModel.find_one_by_id(new_person.id)
 
@@ -40,15 +40,27 @@ def get_person_by_id(id):
     result = PersonModel.find_one_by_id(id)
     if result:
         return result.json()
+
     return {'message': f'Pessoa com id: {id} nao existe'}, 404
+
+
+@app.route('/person/<int:id>/date/', methods=['GET'])
+def get_person_consumption_at_date(id):
+    request_data = request.get_json()
+    date = request_data['date']
+    result = DailyConsumptionModel.find_one_consumption(id, date)
+    if result:
+        return result.json()
+
+    return {'message': f'Consumo não encontrado para Pessoa com id: {id} e no dia {date}'}, 404
 
 
 @app.route('/person/<int:id>/consumption', methods=['GET'])
 def get_person_history(id):
     person_searched = PersonModel.find_one_by_id(id)
     if person_searched:
-        history = DailyConsumptionModel.find_all_person_consumption(id)
-        print(history[0].json())
+        history = DailyConsumptionModel.list_all_by_person(id)
+        return history
     
     return {'message': f'Pessoa com id: {id} nao encontrada'}, 404
 

@@ -42,9 +42,13 @@ class DailyConsumptionModel(alchemy.Model):
         self.remaining = remaining
         self.is_goal = is_goal
 
-    @classmethod
-    def find_all_person_consumption(cls, person_id):
-        return cls.query.filter_by(person_id=person_id).all()
+    @ classmethod
+    def list_all_by_person(cls, person_id):
+        list = cls.query.filter_by(person_id=person_id).all()
+        json = []
+        for consumption in list:
+            json.append(consumption.json())
+        return json
 
     @ classmethod
     def find_one_consumption(cls, person_id, date):
