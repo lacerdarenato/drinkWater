@@ -61,7 +61,7 @@ def get_person_history(id):
     if person_searched:
         history = DailyConsumptionModel.list_all_by_person(id)
         return history
-    
+
     return {'message': f'Pessoa com id: {id} nao encontrada'}, 404
 
 
@@ -110,4 +110,4 @@ def drink_water(id):
 if __name__ == '__main__':
     from data import alchemy
     alchemy.init_app(app)
-    app.run(port=5000, debug=True)
+    app.run(port=os.getenv("PORT"), debug=True)
